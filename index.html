@@ -9,7 +9,8 @@
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;font-family:Tahoma,"Segoe UI","Noto Sans Arabic",sans-serif;color:var(--text);background:radial-gradient(900px 500px at 85% -10%,var(--bg2),transparent 70%),var(--bg1)}
 main{max-width:780px;margin:0 auto;padding:24px 20px 60px}
-h1{font-size:1.45rem;line-height:1.6;margin:0 0 6px}
+.head-bar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+h1{font-size:1.45rem;line-height:1.6;margin:0}
 .sub{color:var(--muted);margin:0 0 18px}
 .tabs{display:flex;gap:8px;margin-bottom:16px}
 .tab{flex:1;padding:11px;border-radius:14px;border:1px solid var(--line);background:transparent;color:var(--muted);font:inherit;font-weight:700;cursor:pointer}
@@ -26,6 +27,7 @@ textarea.in{min-height:78px;resize:vertical}
 .btn.xl:hover{background:rgba(74,222,128,.24)}
 .btn.eye{background:rgba(245,181,61,.14);border:1px solid rgba(245,181,61,.45);color:var(--gold)}
 .btn.eye.off{background:rgba(255,107,138,.14);border:1px solid rgba(255,107,138,.45);color:var(--bad)}
+.btn.admin-on{background:rgba(74,222,128,.16);border:1px solid rgba(74,222,128,.5);color:var(--ok)}
 .btn.sm{padding:9px 14px;font-size:.9rem}
 .btn.del{background:transparent;border:1px solid rgba(255,107,138,.5);color:var(--bad)}
 .btn:disabled{opacity:.6}
@@ -61,8 +63,9 @@ textarea.in{min-height:78px;resize:vertical}
 .card-body-split{display:grid;grid-template-columns:1.45fr .85fr;gap:14px;padding:8px 22px 22px;align-items:stretch}
 .table-side{min-width:0}
 .note-side{display:flex}
-.note-box{width:100%;height:100%;min-height:160px;padding:14px 16px;border-radius:18px;background:var(--field);border:1px dashed rgba(245,181,61,.45);font-size:.92rem;line-height:1.75;white-space:pre-wrap;cursor:pointer;transition:.15s}
-.note-box:hover{border-color:var(--gold);background:rgba(245,181,61,.06)}
+.note-box{width:100%;height:100%;min-height:160px;padding:14px 16px;border-radius:18px;background:var(--field);border:1px dashed rgba(245,181,61,.45);font-size:.92rem;line-height:1.75;white-space:pre-wrap;transition:.15s}
+.note-box.editable{cursor:pointer}
+.note-box.editable:hover{border-color:var(--gold);background:rgba(245,181,61,.06)}
 .note-box small{display:block;color:var(--gold);font-size:.84rem;margin-bottom:6px;font-weight:700}
 .note-box .empty-note{color:var(--muted);font-size:.86rem}
 
@@ -91,8 +94,15 @@ h3{margin:14px 0 8px;font-size:1rem;color:var(--muted)}
 .irow .ck{display:flex;align-items:center;gap:5px;padding-bottom:12px;font-size:.85rem;color:var(--muted);white-space:nowrap}
 .x{border:1px solid var(--line);background:transparent;color:var(--bad);border-radius:10px;width:40px;height:42px;cursor:pointer;font-size:1.1rem}
 .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
-.hide{display:none}
+.hide{display:none !important}
 .print-head{display:none}
+
+.modal-bg{position:fixed;inset:0;background:rgba(8,3,18,.8);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+.modal{width:100%;max-width:400px;background:#1d0d3b;border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 20px 50px rgba(0,0,0,.5)}
+.modal h3{margin:0 0 8px;color:var(--text);font-size:1.15rem}
+.modal p{margin:0 0 14px;color:var(--muted);font-size:.9rem;line-height:1.6}
+.modal-acts{display:flex;gap:8px;margin-top:14px}
+.modal-acts .btn{flex:1}
 
 @media(max-width:680px){
   .card-body-split{grid-template-columns:1fr;align-items:start}
@@ -109,7 +119,7 @@ h3{margin:14px 0 8px;font-size:1rem;color:var(--muted)}
   @page{size:A4;margin:14mm}
   body{background:#fff !important;color:#111 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   main{max-width:100%;padding:0}
-  .sub,.tabs,.search,.filters,.msg,.results,.card-acts,#vForm{display:none !important}
+  .sub,.tabs,.search,.filters,.msg,.results,.card-acts,#vForm,#adminBtn,.modal-bg{display:none !important}
   .note-side.no-note-print{display:none !important}
   h1{font-size:1.3rem;text-align:center;color:#000;margin-bottom:4px}
   .print-head{display:block;text-align:center;font-size:.88rem;color:#555;padding-bottom:12px;margin-bottom:16px;border-bottom:2px solid #222}
@@ -140,10 +150,13 @@ h3{margin:14px 0 8px;font-size:1rem;color:var(--muted)}
 </head>
 <body>
 <main>
-  <h1>پشکنینی عەرز و مەخزەنی گۆڕەپانی بەرهەمە نەوتییەکان</h1>
+  <div class="head-bar">
+    <h1>پشکنینی عەرز و مەخزەنی گۆڕەپانی بەرهەمە نەوتییەکان</h1>
+    <button class="btn alt sm" id="adminBtn" type="button">چوونەژوورەوەی ئەدمین</button>
+  </div>
   <div class="print-head" id="printDate"></div>
-  <p class="sub">گەڕان، زیادکردن و دەستکاریکردنی عەرزەکان.</p>
-  <div class="tabs">
+  <p class="sub" id="subText">گەڕان و پشکنینی زانیاری عەرزەکان.</p>
+  <div class="tabs hide" id="adminTabs">
     <button class="tab on" id="tabSearch" type="button">گەڕان</button>
     <button class="tab" id="tabAdd" type="button">+ عەرزی نوێ</button>
   </div>
@@ -174,7 +187,7 @@ h3{margin:14px 0 8px;font-size:1rem;color:var(--muted)}
           <button class="btn eye sm" id="toggleDisc" type="button">چاو: داشکاندن دیارە</button>
           <button class="btn alt sm" id="printBtn" type="button">پرینت</button>
           <button class="btn xl sm" id="excelBtn" type="button">ئێکسل</button>
-          <button class="btn alt sm" id="editBtn" type="button">دەستکاری</button>
+          <button class="btn alt sm hide" id="editBtn" type="button">دەستکاری</button>
         </div>
       </div>
 
@@ -196,7 +209,7 @@ h3{margin:14px 0 8px;font-size:1rem;color:var(--muted)}
         </div>
 
         <div class="note-side" id="noteSide">
-          <div class="note-box" id="cnoteBox" title="کلیک بکە بۆ نووسین یان دەستکاری تێبینی"><small>تێبینی کڕیار:</small><div id="cnote"></div></div>
+          <div class="note-box" id="cnoteBox"><small>تێبینی کڕیار:</small><div id="cnote"></div></div>
         </div>
       </div>
     </section>
@@ -227,6 +240,19 @@ h3{margin:14px 0 8px;font-size:1rem;color:var(--muted)}
   </section>
 </main>
 
+<div class="modal-bg hide" id="adminModal">
+  <div class="modal">
+    <h3>چوونەژوورەوەی ئەدمین</h3>
+    <p>بۆ زیادکردن یان دەستکاریکردنی زانیاری عەرزەکان، کۆدی تایبەت بە ئەدمین بنووسە:</p>
+    <input class="in" id="adminPass" type="password" placeholder="کۆدی ئەدمین..." autocomplete="off">
+    <div class="msg hide" id="adminErr" role="alert" style="margin-top:10px;padding:9px 12px;font-size:.88rem"></div>
+    <div class="modal-acts">
+      <button class="btn" id="adminSubmit" type="button">چوونەژوورەوە</button>
+      <button class="btn alt" id="adminClose" type="button">داخستن</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 import { getFirestore, doc, getDoc, getDocs, collection, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
@@ -240,6 +266,7 @@ const db = getFirestore(initializeApp({
   appId: "1:122373673621:web:d9a2f52db1cf84a65e819c"
 }));
 
+const ADMIN_CODE = "Rezhwan.taha99";
 const PRICE_PER_DONUM = 50000;
 
 const $ = id => document.getElementById(id);
@@ -254,6 +281,68 @@ const toISO = s => { const m = String(s||"").match(/^(\d{1,2})\/(\d{1,2})\/(\d{4
 const fmtDate = iso => { if(!iso) return "بێ بەروار"; const [y,m,d] = iso.split("-"); return `${+d}/${+m}/${y}`; };
 const t0 = new Date(), today = `${t0.getFullYear()}-${String(t0.getMonth()+1).padStart(2,"0")}-${String(t0.getDate()).padStart(2,"0")}`;
 const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+let isAdmin = sessionStorage.getItem("oil_yard_admin") === "1";
+
+function applyAdminUI(){
+  $("adminTabs").classList.toggle("hide", !isAdmin);
+  $("editBtn").classList.toggle("hide", !isAdmin);
+  $("cnoteBox").classList.toggle("editable", isAdmin);
+  $("cnoteBox").title = isAdmin ? "کلیک بکە بۆ نووسین یان دەستکاری تێبینی" : "";
+  $("subText").textContent = isAdmin
+    ? "دۆخی ئەدمین: گەڕان، زیادکردن و دەستکاریکردنی عەرزەکان."
+    : "گەڕان و پشکنینی زانیاری عەرزەکان.";
+  $("adminBtn").textContent = isAdmin ? "ئەدمین: چالاکە (دەرچوون)" : "چوونەژوورەوەی ئەدمین";
+  $("adminBtn").classList.toggle("admin-on", isAdmin);
+  $("adminBtn").classList.toggle("alt", !isAdmin);
+  if(!isAdmin && !$("vForm").classList.contains("hide")){
+    view("search");
+  }
+  if(current) render();
+}
+
+function openAdminModal(){
+  $("adminPass").value = "";
+  $("adminErr").classList.add("hide");
+  $("adminModal").classList.remove("hide");
+  setTimeout(() => $("adminPass").focus(), 50);
+}
+
+function closeAdminModal(){
+  $("adminModal").classList.add("hide");
+}
+
+function checkAdminLogin(){
+  const val = $("adminPass").value.trim();
+  if(val === ADMIN_CODE){
+    isAdmin = true;
+    sessionStorage.setItem("oil_yard_admin", "1");
+    closeAdminModal();
+    applyAdminUI();
+    showMsg($("msg"), "بە سەرکەوتوویی وەک ئەدمین چوویتە ژوورەوە.", true);
+  } else {
+    showMsg($("adminErr"), "کۆدی ئەدمین هەڵەیە!");
+    $("adminPass").select();
+  }
+}
+
+$("adminBtn").onclick = () => {
+  if(isAdmin){
+    if(confirm("دڵنیایت دەتەوێت لە دۆخی ئەدمین دەربچیت؟")){
+      isAdmin = false;
+      sessionStorage.removeItem("oil_yard_admin");
+      applyAdminUI();
+      showMsg($("msg"), "لە دۆخی ئەدمین دەرچوویت.", false);
+    }
+  } else {
+    openAdminModal();
+  }
+};
+
+$("adminSubmit").onclick = checkAdminLogin;
+$("adminClose").onclick = closeAdminModal;
+$("adminModal").onclick = e => { if(e.target === $("adminModal")) closeAdminModal(); };
+$("adminPass").addEventListener("keydown", e => { if(e.key === "Enter") checkAdminLogin(); });
 
 function normalize(d){
   if(Array.isArray(d.inst)){
@@ -312,6 +401,10 @@ $("toggleDisc").onclick = () => {
 
 function showMsg(el, text, good){ el.textContent = text; el.classList.toggle("good", !!good); el.classList.remove("hide"); }
 function view(name){
+  if(name === "form" && !isAdmin){
+    openAdminModal();
+    return;
+  }
   $("vSearch").classList.toggle("hide", name !== "search");
   $("vForm").classList.toggle("hide", name !== "form");
   $("tabSearch").classList.toggle("on", name === "search");
@@ -494,7 +587,9 @@ function render(){
   if(hasNote){
     $("cnote").textContent = d.note;
   } else {
-    $("cnote").innerHTML = `<span class="empty-note">هیچ تێبینییەک تۆمار نەکراوە.<br>کلیک بکە بۆ زیادکردنی تێبینی.</span>`;
+    $("cnote").innerHTML = isAdmin
+      ? `<span class="empty-note">هیچ تێبینییەک تۆمار نەکراوە.<br>کلیک بکە بۆ زیادکردنی تێبینی.</span>`
+      : `<span class="empty-note">هیچ تێبینییەک تۆمار نەکراوە.</span>`;
   }
   $("noteSide").classList.toggle("no-note-print", !hasNote);
   $("cardBodySplit").classList.toggle("no-note-print", !hasNote);
@@ -570,7 +665,7 @@ function exportExcel(){
       <tr><th colspan="4" style="text-align:center;font-size:15pt">زانیاری عەرزی گۆڕەپانی بەرهەمە نەوتییەکان</th></tr>
       <tr><td class="lbl">ناوی کڕیار</td><td colspan="3"><b>${esc(d.customer || "بێ ناو")}</b></td></tr>
       <tr><td class="lbl">ژمارەی عەرز</td><td>${esc(code)}</td><td class="lbl">دۆنم (قەبارە)</td><td>${esc(d.size || "-")}</td></tr>
-      <tr><td class="lbl">ژمارەی مۆبایل</td><td style="mso-number-format:'\\@'">${esc(d.phone || "-")}</td><td class="lbl">بەرواری دابەزاندن</td><td>${esc(fmtDate(today))}</td></tr>
+      <tr><td class="lbl">ژمارەی مۆبایل</td><td style="mso-number-format:'\@'">${esc(d.phone || "-")}</td><td class="lbl">بەرواری دابەزاندن</td><td>${esc(fmtDate(today))}</td></tr>
       <tr><td class="lbl">کۆی گشتی پارەی عەرز</td><td>${s.landTotal.toLocaleString("en-US")}$</td><td class="lbl">بڕی پارەی دراو</td><td>${s.paid.toLocaleString("en-US")}$</td></tr>
       ${discRow}
       ${noteRow}
@@ -583,10 +678,10 @@ function exportExcel(){
   </body>
   </html>`;
 
-  const blob = new Blob(["\uFEFF" + html], { type: "application/vnd.ms-excel;charset=utf-8;" });
+  const blob = new Blob(["﻿" + html], { type: "application/vnd.ms-excel;charset=utf-8;" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-  const safeName = (d.customer || "کڕیار").replace(/[\\/:*?"<>|]/g, "").trim();
+  const safeName = (d.customer || "کڕیار").replace(/[\/:*?"<>|]/g, "").trim();
   a.href = url;
   a.download = `عەرز_${code}_${safeName}.xls`;
   document.body.appendChild(a);
@@ -614,6 +709,10 @@ function addRow(it = {}){
 }
 
 function openForm(code, d, focusNote = false){
+  if(!isAdmin){
+    openAdminModal();
+    return;
+  }
   const edit = !!code;
   $("ftitle").textContent = edit ? "دەستکاریکردنی عەرزی " + code : "زیادکردنی عەرزی نوێ";
   $("fcode").value = code || ""; $("fcode").readOnly = edit;
@@ -630,6 +729,7 @@ function openForm(code, d, focusNote = false){
 }
 
 async function save(){
+  if(!isAdmin){ openAdminModal(); return; }
   const code = $("fcode").value.trim();
   if(!/^\d+$/.test(code)) return showMsg($("fmsg"), "ژمارەی عەرز دەبێت تەنها ژمارە بێت.");
   if(!$("fname").value.trim()) return showMsg($("fmsg"), "ناوی کڕیار بنووسە.");
@@ -668,6 +768,7 @@ async function save(){
 }
 
 async function remove(){
+  if(!isAdmin){ openAdminModal(); return; }
   const code = $("fcode").value.trim();
   if(!confirm("دڵنیایت دەتەوێت عەرزی " + code + " بسڕیتەوە؟ ئەم کارە ناگەڕێتەوە.")) return;
   try{
@@ -689,12 +790,13 @@ $("tabAdd").onclick = () => openForm();
 $("printBtn").onclick = printCard;
 $("excelBtn").onclick = exportExcel;
 $("editBtn").onclick = () => current && openForm(current.code, current.data, false);
-$("cnoteBox").onclick = () => current && openForm(current.code, current.data, true);
+$("cnoteBox").onclick = () => { if(isAdmin && current) openForm(current.code, current.data, true); };
 $("addRow").onclick = () => addRow();
 $("save").onclick = save;
 $("cancel").onclick = () => view("search");
 $("del").onclick = remove;
 
+applyAdminUI();
 fetchAllPlots().catch(() => {});
 </script>
 </body>
